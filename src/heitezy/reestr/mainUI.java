@@ -23,12 +23,12 @@ class mainUI {
     private JButton exitButton;
 
     static String personname;
-    static String organization;
+    static String organizationtext;
 
 
     mainUI() throws IOException {
         JFrame f = new JFrame("Реестр");
-        f.setSize(650, 200);
+        f.setSize(650, 220);
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setContentPane(panel1);
@@ -54,7 +54,7 @@ class mainUI {
         }
 
         if (fileorg.exists()) {
-            organization = new String(Files.readAllBytes(Paths.get("org.txt")));
+            organizationtext = new String(Files.readAllBytes(Paths.get("org.txt")));
         }
 
         exitButton.addActionListener(actionEvent -> System.exit(0));

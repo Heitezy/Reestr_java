@@ -2,7 +2,10 @@ package heitezy.reestr;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -12,6 +15,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -48,7 +53,7 @@ class Convertor {
             String extension = XlsOrCSV.substring(lastIndex);
 
             if (extension.equals(".csv")) {
-                wbToProcess[i] = convertCsvToXls(filesToProcess.get(i));
+                wbToProcess[i] = convertCsvToXls(filesToProcess.get(i).toString());
             } else {
                 wbToProcess[i] = readWorkbook(filesToProcess.get(i).toString());
             }
@@ -93,7 +98,6 @@ class Convertor {
 
                         HSSFRow rowSingle = sheetSingle.getRow(j);
                         HSSFRow rowTemplate = templateSheet.createRow(j - 4);
-                        rowTemplate.setHeight((short) 1200);
 
                         Iterator<Cell> cellIterator = rowSingle.cellIterator();
 
@@ -219,16 +223,25 @@ class Convertor {
             } catch (Exception e) {
                 System.out.println("Неизвестный поставщик");
             }
-            convertToPdf(templatewb, wbname[i], dateOfDocument);
+            convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
         }
     }
 
-    private static HSSFWorkbook convertCsvToXls(File csvFile) throws IOException {
+    private static HSSFWorkbook convertCsvToXls(String csvFile) throws IOException {
         //todo Convertion to xls
         HSSFWorkbook tempwb = new HSSFWorkbook();
         HSSFSheet tempst = tempwb.createSheet("TempCsvSheet");
 
-        CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(csvFile), "Cp1251"));
+        final CSVParser parser =
+                new CSVParserBuilder()
+                        .withSeparator(';')
+                        .withIgnoreQuotations(true)
+                        .build();
+        final CSVReader reader =
+                new CSVReaderBuilder(new StringReader(new String(Files.readAllBytes(Paths.get(csvFile)), "Cp1251")))
+                        .withCSVParser(parser)
+                        .build();
+
         String[] nextLine;
         int rowNum = 0;
 
@@ -236,8 +249,18 @@ class Convertor {
 
             HSSFRow currentRow = tempst.createRow(rowNum++);
             for (int i = 0; i < nextLine.length; i++) {
-                currentRow.createCell(i).setCellType(CellType.STRING);
-                currentRow.getCell(i).setCellValue(nextLine[i]);
+                if (i>9) {
+                    String[] line_info = nextLine[i].split(";");
+                    for (int j = 0; j < line_info.length; j++) {
+                        currentRow.createCell(j).setCellType(CellType.STRING);
+                        currentRow.getCell(j).setCellValue(line_info[j]);
+                        System.out.println(line_info[j]);
+                    }
+                } else {
+                    currentRow.createCell(i).setCellType(CellType.STRING);
+                    currentRow.getCell(i).setCellValue(nextLine[i]);
+                    System.out.println(nextLine[i]);
+                }
             }
             if (currentRow.getRowNum() == 4) {
                 currentRow.createCell(1).setCellValue("");
@@ -246,12 +269,12 @@ class Convertor {
         try {
             System.out.println(tempst.getRow(8).getCell(0).toString());
         } catch (Exception e) {
-            System.out.println("Это не Бадм");
+            System.out.println("Неизвестный CSV файл");
         }
         return tempwb;
     }
 
-    private static void convertToPdf(HSSFWorkbook wb, String wbname, String dateOfDocument) throws DocumentException, IOException {
+    private static void convertToPdf(HSSFWorkbook wb, String wbname, String dateOfDocument, int reestr_type) throws DocumentException, IOException {
         HSSFSheet wsheet = Objects.requireNonNull(wb).getSheetAt(0);
         Iterator<Row> rowIterator = wsheet.iterator();
         Document xls_2_pdf = new Document(PageSize.A4.rotate());
@@ -265,15 +288,35 @@ class Convertor {
         }
         xls_2_pdf.open();
 
-        float[] columnWidths = {(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+        float[] columnWidths;
+        switch (reestr_type) {
+            case (3):
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+                break;
+            case (1):
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+                break;
+            default:
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+        }
+
         PdfPTable table = new PdfPTable(columnWidths);
         table.setWidthPercentage(90);
         BaseFont arial = BaseFont.createFont("ArialMT.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +
-                "які надійшли до суб'єкта господарювання\n" + mainUI.organization +"\n ", font));
-        header_cell.setColspan(11);
+                "які надійшли до суб'єкта господарювання\n" + mainUI.organizationtext +"\n ", font));
+        switch (reestr_type) {
+            case (3):
+                header_cell.setColspan(11);
+                break;
+            case (1):
+                header_cell.setColspan(10);
+                break;
+            default:
+                header_cell.setColspan(10);
+        }
         header_cell.setVerticalAlignment(Element.ALIGN_CENTER);
         header_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(header_cell);
@@ -282,13 +325,30 @@ class Convertor {
                 "Назва лікарського засобу та його лікарська форма, дата реєстрації та номер реєстраційного посвідчення",
                 "Назва виробника", "Номер серії", "Номер і дата сертифіката якості виробника", "Кількість одержаних упаковок",
                 "Термін придатності лікарського засобу", "Результат контролю уповноваженою особою"};
-        for (int i=0; i<10; i++) {
-            PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
-            column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            if (i==9) {
-                column_cell.setColspan(2);
-            }
-            table.addCell(column_cell);
+        switch (reestr_type) {
+            case (3):
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    if (i==9) {
+                        column_cell.setColspan(2);
+                    }
+                    table.addCell(column_cell);
+                }
+                break;
+            case (1):
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    table.addCell(column_cell);
+                }
+                break;
+            default:
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    table.addCell(column_cell);
+                }
         }
 
         PdfPCell table_cell;
@@ -306,12 +366,31 @@ class Convertor {
 
         PdfPCell footer_cell = new PdfPCell(new Phrase("\nРезультат вхідного контролю якості лікарських засобів " +
                 "здійснив — уповноважена особа " + mainUI.personname + "\n" + dateOfDocument, font));
-        footer_cell.setColspan(11);
+        switch (reestr_type) {
+            case (3):
+                footer_cell.setColspan(11);
+                break;
+            case (1):
+                footer_cell.setColspan(10);
+                break;
+            default:
+                footer_cell.setColspan(10);
+        }
         footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
 
         Image image = Image.getInstance("sign.jpg");
         PdfPCell image_cell = new PdfPCell(image);
+        switch (reestr_type) {
+            case (3):
+                image_cell.setColspan(11);
+                break;
+            case (1):
+                image_cell.setColspan(10);
+                break;
+            default:
+                image_cell.setColspan(10);
+        }
         image_cell.setColspan(11);
         image_cell.setPaddingLeft((float)50);
         image_cell.setFixedHeight((float)100);
