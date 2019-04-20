@@ -6,6 +6,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static heitezy.reestr.mainUI.personname;
+
 class Person extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -48,6 +50,7 @@ class Person extends JDialog {
     private void onOK() throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream("person.txt"))) {
             out.print(textFieldPerson.getText());
+            personname = textFieldPerson.getText();
         }
         dispose();
     }

@@ -93,7 +93,6 @@ class Convertor {
 
                         HSSFRow rowSingle = sheetSingle.getRow(j);
                         HSSFRow rowTemplate = templateSheet.createRow(j - 4);
-                        rowTemplate.setHeight((short) 1200);
 
                         Iterator<Cell> cellIterator = rowSingle.cellIterator();
 
@@ -219,7 +218,7 @@ class Convertor {
             } catch (Exception e) {
                 System.out.println("Неизвестный поставщик");
             }
-            convertToPdf(templatewb, wbname[i], dateOfDocument);
+            convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
         }
     }
 
@@ -251,7 +250,7 @@ class Convertor {
         return tempwb;
     }
 
-    private static void convertToPdf(HSSFWorkbook wb, String wbname, String dateOfDocument) throws DocumentException, IOException {
+    private static void convertToPdf(HSSFWorkbook wb, String wbname, String dateOfDocument, int reestr_type) throws DocumentException, IOException {
         HSSFSheet wsheet = Objects.requireNonNull(wb).getSheetAt(0);
         Iterator<Row> rowIterator = wsheet.iterator();
         Document xls_2_pdf = new Document(PageSize.A4.rotate());
@@ -265,15 +264,35 @@ class Convertor {
         }
         xls_2_pdf.open();
 
-        float[] columnWidths = {(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+        float[] columnWidths;
+        switch (reestr_type) {
+            case (3):
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+                break;
+            case (1):
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+                break;
+            default:
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+        }
+
         PdfPTable table = new PdfPTable(columnWidths);
         table.setWidthPercentage(90);
         BaseFont arial = BaseFont.createFont("ArialMT.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +
-                "які надійшли до суб'єкта господарювання\n" + mainUI.organization +"\n ", font));
-        header_cell.setColspan(11);
+                "які надійшли до суб'єкта господарювання\n" + mainUI.organizationtext +"\n ", font));
+        switch (reestr_type) {
+            case (3):
+                header_cell.setColspan(11);
+                break;
+            case (1):
+                header_cell.setColspan(10);
+                break;
+            default:
+                header_cell.setColspan(10);
+        }
         header_cell.setVerticalAlignment(Element.ALIGN_CENTER);
         header_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(header_cell);
@@ -282,13 +301,30 @@ class Convertor {
                 "Назва лікарського засобу та його лікарська форма, дата реєстрації та номер реєстраційного посвідчення",
                 "Назва виробника", "Номер серії", "Номер і дата сертифіката якості виробника", "Кількість одержаних упаковок",
                 "Термін придатності лікарського засобу", "Результат контролю уповноваженою особою"};
-        for (int i=0; i<10; i++) {
-            PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
-            column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            if (i==9) {
-                column_cell.setColspan(2);
-            }
-            table.addCell(column_cell);
+        switch (reestr_type) {
+            case (3):
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    if (i==9) {
+                        column_cell.setColspan(2);
+                    }
+                    table.addCell(column_cell);
+                }
+                break;
+            case (1):
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    table.addCell(column_cell);
+                }
+                break;
+            default:
+                for (int i=0; i<10; i++) {
+                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    table.addCell(column_cell);
+                }
         }
 
         PdfPCell table_cell;
@@ -306,12 +342,31 @@ class Convertor {
 
         PdfPCell footer_cell = new PdfPCell(new Phrase("\nРезультат вхідного контролю якості лікарських засобів " +
                 "здійснив — уповноважена особа " + mainUI.personname + "\n" + dateOfDocument, font));
-        footer_cell.setColspan(11);
+        switch (reestr_type) {
+            case (3):
+                footer_cell.setColspan(11);
+                break;
+            case (1):
+                footer_cell.setColspan(10);
+                break;
+            default:
+                footer_cell.setColspan(10);
+        }
         footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
 
         Image image = Image.getInstance("sign.jpg");
         PdfPCell image_cell = new PdfPCell(image);
+        switch (reestr_type) {
+            case (3):
+                image_cell.setColspan(11);
+                break;
+            case (1):
+                image_cell.setColspan(10);
+                break;
+            default:
+                image_cell.setColspan(10);
+        }
         image_cell.setColspan(11);
         image_cell.setPaddingLeft((float)50);
         image_cell.setFixedHeight((float)100);

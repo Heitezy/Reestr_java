@@ -6,6 +6,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static heitezy.reestr.mainUI.organizationtext;
+
 class Organization extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -42,6 +44,7 @@ class Organization extends JDialog {
     private void onOK() {
         try (PrintStream out = new PrintStream(new FileOutputStream("org.txt"))) {
             out.print(organization.getText());
+            organizationtext = organization.getText();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
