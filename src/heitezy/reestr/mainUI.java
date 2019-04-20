@@ -117,7 +117,7 @@ class mainUI {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("Not loaded.");
+                System.out.println("Canceled.");
             }
         });
 

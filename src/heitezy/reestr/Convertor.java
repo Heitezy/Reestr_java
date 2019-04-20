@@ -74,6 +74,7 @@ class Convertor {
             HSSFWorkbook wbToProcessSingle = wbToProcess[i];
 
             String dateOfDocument = null;
+            int reestr_type = 0;
 
             HSSFWorkbook templatewb = new HSSFWorkbook();
             templatewb.createSheet("TempSheet");
@@ -86,6 +87,7 @@ class Convertor {
                     String datecell = sheetSingle.getRow(4).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
                     dateOfDocument = datecell.substring(predate + 1);
+                    reestr_type = 1;
 
                     for (int j = 4; j < sheetSingle.getPhysicalNumberOfRows() - 2; j++) {
 
@@ -130,6 +132,7 @@ class Convertor {
                     String datecell = sheetSingle.getRow(8).getCell(1).toString();
                     int predate = datecell.lastIndexOf(' ');
                     dateOfDocument = datecell.substring(predate + 1);
+                    reestr_type = 2;
 
                     for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
 
@@ -173,6 +176,7 @@ class Convertor {
                     String datecell = sheetSingle.getRow(9).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
                     dateOfDocument = datecell.substring(predate + 1);
+                    reestr_type = 3;
 
                     for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows() - 3; j++) {
 
@@ -213,7 +217,7 @@ class Convertor {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Неизвестный тип реестра");
+                System.out.println("Неизвестный поставщик");
             }
             convertToPdf(templatewb, wbname[i], dateOfDocument);
         }
@@ -247,7 +251,7 @@ class Convertor {
         return tempwb;
     }
 
-    private static void convertToPdf (HSSFWorkbook wb, String wbname, String dateOfDocument) throws DocumentException, IOException {
+    private static void convertToPdf(HSSFWorkbook wb, String wbname, String dateOfDocument) throws DocumentException, IOException {
         HSSFSheet wsheet = Objects.requireNonNull(wb).getSheetAt(0);
         Iterator<Row> rowIterator = wsheet.iterator();
         Document xls_2_pdf = new Document(PageSize.A4.rotate());
@@ -261,17 +265,33 @@ class Convertor {
         }
         xls_2_pdf.open();
 
-        PdfPTable table = new PdfPTable(11);
+        float[] columnWidths = {(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+        PdfPTable table = new PdfPTable(columnWidths);
         table.setWidthPercentage(90);
-        PdfPCell table_cell;
-
         BaseFont arial = BaseFont.createFont("ArialMT.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +
-                "які надійшли до суб'єкта господарювання\n" + mainUI.organization, font));
+                "які надійшли до суб'єкта господарювання\n" + mainUI.organization +"\n ", font));
         header_cell.setColspan(11);
+        header_cell.setVerticalAlignment(Element.ALIGN_CENTER);
+        header_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(header_cell);
+
+        String[] columns = {"№ з/п", "Назва постачальника та номер ліцензії", "Номер та дата накладної",
+                "Назва лікарського засобу та його лікарська форма, дата реєстрації та номер реєстраційного посвідчення",
+                "Назва виробника", "Номер серії", "Номер і дата сертифіката якості виробника", "Кількість одержаних упаковок",
+                "Термін придатності лікарського засобу", "Результат контролю уповноваженою особою"};
+        for (int i=0; i<10; i++) {
+            PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+            column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            if (i==9) {
+                column_cell.setColspan(2);
+            }
+            table.addCell(column_cell);
+        }
+
+        PdfPCell table_cell;
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
@@ -279,19 +299,23 @@ class Convertor {
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
+                table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(table_cell);
             }
         }
 
-        PdfPCell footer_cell = new PdfPCell(new Phrase("Результат вхідного контролю якості лікарських засобів " +
+        PdfPCell footer_cell = new PdfPCell(new Phrase("\nРезультат вхідного контролю якості лікарських засобів " +
                 "здійснив — уповноважена особа " + mainUI.personname + "\n" + dateOfDocument, font));
         footer_cell.setColspan(11);
+        footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
 
         Image image = Image.getInstance("sign.jpg");
         PdfPCell image_cell = new PdfPCell(image);
         image_cell.setColspan(11);
+        image_cell.setPaddingLeft((float)50);
         image_cell.setFixedHeight((float)100);
+        image_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(image_cell);
 
         xls_2_pdf.add(table);
