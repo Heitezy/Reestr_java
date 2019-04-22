@@ -131,9 +131,9 @@ class Convertor {
                             }
                         }
                     }
-                } else if (sheetSingle.getRow(8).getCell(0).toString().contains("БаДМ")) {
+                } else if (sheetSingle.getRow(8).getCell(1).toString().contains("БаДМ")) {
 
-                    String datecell = sheetSingle.getRow(8).getCell(1).toString();
+                    String datecell = sheetSingle.getRow(8).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
                     dateOfDocument = datecell.substring(predate + 1);
                     reestr_type = 2;
@@ -228,44 +228,44 @@ class Convertor {
     }
 
     private static HSSFWorkbook convertCsvToXls(String csvFile) throws IOException {
-        //todo Convertion to xls
+        //todo Convertion of Uni
         HSSFWorkbook tempwb = new HSSFWorkbook();
         HSSFSheet tempst = tempwb.createSheet("TempCsvSheet");
 
-        final CSVParser parser =
-                new CSVParserBuilder()
-                        .withSeparator(';')
-                        .withIgnoreQuotations(true)
-                        .build();
-        final CSVReader reader =
-                new CSVReaderBuilder(new StringReader(new String(Files.readAllBytes(Paths.get(csvFile)), "Cp1251")))
+        CSVParser parser = new CSVParserBuilder().withSeparator(';').withIgnoreQuotations(true).build();
+        CSVReader reader = new CSVReaderBuilder(new StringReader
+                (new String(Files.readAllBytes(Paths.get(csvFile)), "Cp1251")))
                         .withCSVParser(parser)
                         .build();
 
         String[] nextLine;
         int rowNum = 0;
+        int columnNum = 0;
 
         while ((nextLine = reader.readNext()) != null) {
 
             HSSFRow currentRow = tempst.createRow(rowNum++);
-            for (int i = 0; i < nextLine.length; i++) {
-                if (i>9) {
-                    String[] line_info = nextLine[i].split(";");
-                    for (int j = 0; j < line_info.length; j++) {
-                        currentRow.createCell(j).setCellType(CellType.STRING);
-                        currentRow.getCell(j).setCellValue(line_info[j]);
-                        System.out.println(line_info[j]);
-                    }
-                } else {
-                    currentRow.createCell(i).setCellType(CellType.STRING);
-                    currentRow.getCell(i).setCellValue(nextLine[i]);
-                    System.out.println(nextLine[i]);
+            columnNum++;
+
+            if (rowNum<9) {
+                currentRow.createCell(0).setCellType(CellType.STRING);
+                currentRow.getCell(0).setCellValue(nextLine[0]);
+            } else {
+                currentRow.createCell(0).setCellType(CellType.NUMERIC);
+                currentRow.getCell(0).setCellValue(columnNum-8);
+                for (int j = 1; j < 9; j++) {
+                    currentRow.createCell(j).setCellType(CellType.STRING);
+                    currentRow.getCell(j).setCellValue(nextLine[j-1]);
                 }
+                currentRow.createCell(9).setCellType(CellType.STRING);
+                currentRow.getCell(9).setCellValue("Відповідає");
             }
+
             if (currentRow.getRowNum() == 4) {
                 currentRow.createCell(1).setCellValue("");
             }
         }
+
         try {
             System.out.println(tempst.getRow(8).getCell(0).toString());
         } catch (Exception e) {
@@ -358,9 +358,28 @@ class Convertor {
             Iterator<Cell> cellIterator = row.cellIterator();
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
-                table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(table_cell);
+                switch (cell.getCellType()) {
+                    case STRING:
+                        table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
+                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                        table.addCell(table_cell);
+                        break;
+                    case NUMERIC:
+                        table_cell = new PdfPCell(new Phrase(String.valueOf((int)cell.getNumericCellValue()), font));
+                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                        table.addCell(table_cell);
+                        break;
+                    case ERROR:
+                        table_cell = new PdfPCell(new Phrase(" ", font));
+                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                        table.addCell(table_cell);
+                        break;
+                    case BLANK:
+                        table_cell = new PdfPCell(new Phrase(" ", font));
+                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                        table.addCell(table_cell);
+                        break;
+                }
             }
         }
 
