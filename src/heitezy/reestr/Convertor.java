@@ -27,7 +27,7 @@ import static com.itextpdf.text.Font.NORMAL;
 
 class Convertor {
 
-    static void convert(String inputpath, String outputpath) throws IOException, DocumentException {
+    static void convert(String inputpath, String outputpath) throws IOException {
         File inputfiles = new File(inputpath);
         ArrayList<File> listoffiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(inputfiles.listFiles((file, filterstring) -> {
             if (filterstring.lastIndexOf('.') > 0) {
@@ -43,7 +43,7 @@ class Convertor {
         batchProcess(listoffiles, outputfiles, outputpath);
     }
 
-    private static void batchProcess(ArrayList<File> filesToProcess, HSSFWorkbook[] wbToProcess, String outputpath) throws IOException, DocumentException {
+    private static void batchProcess(ArrayList<File> filesToProcess, HSSFWorkbook[] wbToProcess, String outputpath) throws IOException {
 
         String[] wbname = new String[wbToProcess.length];
 
@@ -73,7 +73,7 @@ class Convertor {
         }
     }
 
-    private static void magic(HSSFWorkbook[] wbToProcess, String[] wbname) throws IOException, DocumentException {
+    private static void magic(HSSFWorkbook[] wbToProcess, String[] wbname) {
 
         for (int i = 0; i < wbToProcess.length; i++) {
             HSSFWorkbook wbToProcessSingle = wbToProcess[i];
@@ -87,7 +87,53 @@ class Convertor {
             HSSFSheet templateSheet = templatewb.getSheetAt(0);
 
             try {
-                if (sheetSingle.getRow(4).getCell(1).toString().contains("ВЕНТА. ЛТД")) {
+                if (sheetSingle.getRow(2).getCell(1,
+                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Юніфарма")) {
+
+                    String datecell = sheetSingle.getRow(2).getCell(2).toString();
+                    int predate = datecell.lastIndexOf(' ');
+                    dateOfDocument = datecell.substring(predate + 1);
+                    reestr_type = 4;
+
+                    for (int j = 2; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
+
+                        HSSFRow rowSingle = sheetSingle.getRow(j);
+                        HSSFRow rowTemplate = templateSheet.createRow(j - 2);
+
+                        Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                        while (cellIterator.hasNext()) {
+                            Cell cellIn = cellIterator.next();
+                            Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                            switch (cellIn.getCellType()) {
+                                case BLANK:
+                                    break;
+
+                                case BOOLEAN:
+                                    cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                    break;
+
+                                case ERROR:
+                                    cellOut.setCellValue(cellIn.getErrorCellValue());
+                                    break;
+
+                                case FORMULA:
+                                    cellOut.setCellFormula(cellIn.getCellFormula());
+                                    break;
+
+                                case NUMERIC:
+                                    cellOut.setCellValue(cellIn.getNumericCellValue());
+                                    break;
+
+                                case STRING:
+                                    cellOut.setCellValue(cellIn.getStringCellValue());
+                                    break;
+                            }
+                        }
+                    }
+                } else if (sheetSingle.getRow(4).getCell(1,
+                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ВЕНТА. ЛТД")) {
 
                     String datecell = sheetSingle.getRow(4).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
@@ -131,17 +177,18 @@ class Convertor {
                             }
                         }
                     }
-                } else if (sheetSingle.getRow(8).getCell(1).toString().contains("БаДМ")) {
+                } else if (sheetSingle.getRow(7).getCell(1,
+                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
 
-                    String datecell = sheetSingle.getRow(8).getCell(2).toString();
+                    String datecell = sheetSingle.getRow(7).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
                     dateOfDocument = datecell.substring(predate + 1);
                     reestr_type = 2;
 
-                    for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
+                    for (int j = 7; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
 
                         HSSFRow rowSingle = sheetSingle.getRow(j);
-                        HSSFRow rowTemplate = templateSheet.createRow(j - 8);
+                        HSSFRow rowTemplate = templateSheet.createRow(j - 7);
 
                         Iterator<Cell> cellIterator = rowSingle.cellIterator();
 
@@ -175,7 +222,8 @@ class Convertor {
                             }
                         }
                     }
-                } else if (sheetSingle.getRow(8).getCell(1).toString().contains("Оптiма-Фарм")) {
+                } else if (sheetSingle.getRow(8).getCell(1,
+                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Оптiма-Фарм")) {
 
                     String datecell = sheetSingle.getRow(9).getCell(2).toString();
                     int predate = datecell.lastIndexOf(' ');
@@ -220,15 +268,14 @@ class Convertor {
                         }
                     }
                 }
+                convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
             } catch (Exception e) {
                 System.out.println("Неизвестный поставщик");
             }
-            convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
         }
     }
 
     private static HSSFWorkbook convertCsvToXls(String csvFile) throws IOException {
-        //todo Convertion of Uni
         HSSFWorkbook tempwb = new HSSFWorkbook();
         HSSFSheet tempst = tempwb.createSheet("TempCsvSheet");
 
@@ -240,36 +287,43 @@ class Convertor {
 
         String[] nextLine;
         int rowNum = 0;
-        int columnNum = 0;
+        int lineNum = 0;
 
-        while ((nextLine = reader.readNext()) != null) {
+        String[] csv_type = reader.readNext();
 
-            HSSFRow currentRow = tempst.createRow(rowNum++);
-            columnNum++;
+        if (csv_type[0].contains("Додаток")) {
+            while ((nextLine = reader.readNext()) != null) {
 
-            if (rowNum<9) {
-                currentRow.createCell(0).setCellType(CellType.STRING);
-                currentRow.getCell(0).setCellValue(nextLine[0]);
-            } else {
-                currentRow.createCell(0).setCellType(CellType.NUMERIC);
-                currentRow.getCell(0).setCellValue(columnNum-8);
-                for (int j = 1; j < 9; j++) {
+                HSSFRow currentRow = tempst.createRow(rowNum++);
+                lineNum++;
+
+                if (rowNum<8) {
+                    currentRow.createCell(0).setCellType(CellType.STRING);
+                    currentRow.getCell(0).setCellValue(nextLine[0]);
+                } else {
+                    currentRow.createCell(0).setCellType(CellType.NUMERIC);
+                    currentRow.getCell(0).setCellValue(lineNum-7);
+                    for (int j = 1; j < 9; j++) {
+                        currentRow.createCell(j).setCellType(CellType.STRING);
+                        currentRow.getCell(j).setCellValue(nextLine[j-1]);
+                    }
+                    currentRow.createCell(9).setCellType(CellType.STRING);
+                    currentRow.getCell(9).setCellValue("Відповідає");
+                }
+            }
+        } else if (csv_type[0].contains("Реєстр")) {
+            while ((nextLine = reader.readNext()) != null) {
+
+                HSSFRow currentRow = tempst.createRow(rowNum++);
+
+                for (int j = 0; j < 9; j++) {
                     currentRow.createCell(j).setCellType(CellType.STRING);
-                    currentRow.getCell(j).setCellValue(nextLine[j-1]);
+                    currentRow.getCell(j).setCellValue(nextLine[j]);
                 }
                 currentRow.createCell(9).setCellType(CellType.STRING);
                 currentRow.getCell(9).setCellValue("Відповідає");
-            }
 
-            if (currentRow.getRowNum() == 4) {
-                currentRow.createCell(1).setCellValue("");
             }
-        }
-
-        try {
-            System.out.println(tempst.getRow(8).getCell(0).toString());
-        } catch (Exception e) {
-            System.out.println("Неизвестный CSV файл");
         }
         return tempwb;
     }
@@ -293,8 +347,11 @@ class Convertor {
             case (3):
                 columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
                 break;
+            case (2):
+                columnWidths = new float[]{(float) 1.5, 5, (float) 4.3, 7, 5, 3, 4, 4, 4, 5};
+                break;
             case (1):
-                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+                columnWidths = new float[]{(float) 1.5, (float) 5.2, 4, 7, 5, 3, 4, 4, 4, 5};
                 break;
             default:
                 columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
@@ -311,7 +368,7 @@ class Convertor {
             case (3):
                 header_cell.setColspan(11);
                 break;
-            case (1):
+            case (2):
                 header_cell.setColspan(10);
                 break;
             default:

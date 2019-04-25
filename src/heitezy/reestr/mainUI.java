@@ -1,7 +1,5 @@
 package heitezy.reestr;
 
-import com.itextpdf.text.DocumentException;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ItemEvent;
@@ -127,14 +125,15 @@ class mainUI {
             String outpath = textField2.getText();
             try {
                 Convertor.convert(inpath, outpath);
-            } catch (IOException | DocumentException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
         deleteSourceFilesAfterCheckBox.addItemListener(itemEvent -> {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                //todo
+                // todo
+                System.out.println("Checkbox");
             }
         });
     }
