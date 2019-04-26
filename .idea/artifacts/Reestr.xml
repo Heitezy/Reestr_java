@@ -29,6 +29,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-compress-1.18.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/poi-ooxml-schemas-4.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-collections4-4.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jOpenDocument-1.3.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

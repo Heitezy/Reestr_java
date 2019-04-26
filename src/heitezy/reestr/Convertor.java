@@ -13,6 +13,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.jopendocument.dom.spreadsheet.Sheet;
+import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -78,200 +80,297 @@ class Convertor {
         for (int i = 0; i < wbToProcess.length; i++) {
             HSSFWorkbook wbToProcessSingle = wbToProcess[i];
 
-            String dateOfDocument = null;
-            int reestr_type = 0;
+            if ((wbname[i].substring(wbname[i].lastIndexOf(File.separator)).contains("Delta"))) {
+                deltaMagic(wbToProcess[i], wbname[i]);
+            } else if ((wbname[i].substring(wbname[i].lastIndexOf(File.separator)).contains("ГФР"))) {
+                galaMagic(wbname[i]);
+            } else {
+                String dateOfDocument = null;
+                int reestr_type = 0;
 
-            HSSFWorkbook templatewb = new HSSFWorkbook();
-            templatewb.createSheet("TempSheet");
-            HSSFSheet sheetSingle = wbToProcessSingle.getSheetAt(0);
-            HSSFSheet templateSheet = templatewb.getSheetAt(0);
+                HSSFWorkbook templatewb = new HSSFWorkbook();
+                templatewb.createSheet("TempSheet");
+                HSSFSheet sheetSingle = wbToProcessSingle.getSheetAt(0);
+                HSSFSheet templateSheet = templatewb.getSheetAt(0);
 
-            try {
-                if (sheetSingle.getRow(2).getCell(1,
-                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Юніфарма")) {
+                try {
+                    if (sheetSingle.getRow(2).getCell(1,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Юніфарма")) {
 
-                    String datecell = sheetSingle.getRow(2).getCell(2).toString();
-                    int predate = datecell.lastIndexOf(' ');
-                    dateOfDocument = datecell.substring(predate + 1);
-                    reestr_type = 4;
+                        String datecell = sheetSingle.getRow(2).getCell(2).toString();
+                        int predate = datecell.lastIndexOf(' ');
+                        dateOfDocument = datecell.substring(predate + 1);
+                        reestr_type = 4;
 
-                    for (int j = 2; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
+                        for (int j = 2; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
 
-                        HSSFRow rowSingle = sheetSingle.getRow(j);
-                        HSSFRow rowTemplate = templateSheet.createRow(j - 2);
+                            HSSFRow rowSingle = sheetSingle.getRow(j);
+                            HSSFRow rowTemplate = templateSheet.createRow(j - 2);
 
-                        Iterator<Cell> cellIterator = rowSingle.cellIterator();
+                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
 
-                        while (cellIterator.hasNext()) {
-                            Cell cellIn = cellIterator.next();
-                            Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+                            while (cellIterator.hasNext()) {
+                                Cell cellIn = cellIterator.next();
+                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
 
-                            switch (cellIn.getCellType()) {
-                                case BLANK:
-                                    break;
+                                switch (cellIn.getCellType()) {
+                                    case BLANK:
+                                        break;
 
-                                case BOOLEAN:
-                                    cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                    break;
+                                    case BOOLEAN:
+                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                        break;
 
-                                case ERROR:
-                                    cellOut.setCellValue(cellIn.getErrorCellValue());
-                                    break;
+                                    case ERROR:
+                                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                                        break;
 
-                                case FORMULA:
-                                    cellOut.setCellFormula(cellIn.getCellFormula());
-                                    break;
+                                    case FORMULA:
+                                        cellOut.setCellFormula(cellIn.getCellFormula());
+                                        break;
 
-                                case NUMERIC:
-                                    cellOut.setCellValue(cellIn.getNumericCellValue());
-                                    break;
+                                    case NUMERIC:
+                                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                                        break;
 
-                                case STRING:
-                                    cellOut.setCellValue(cellIn.getStringCellValue());
-                                    break;
+                                    case STRING:
+                                        cellOut.setCellValue(cellIn.getStringCellValue());
+                                        break;
+                                }
+                            }
+                        }
+                    } else if (sheetSingle.getRow(4).getCell(1,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ВЕНТА. ЛТД")) {
+
+                        String datecell = sheetSingle.getRow(4).getCell(2).toString();
+                        int predate = datecell.lastIndexOf(' ');
+                        dateOfDocument = datecell.substring(predate + 1);
+                        reestr_type = 1;
+
+                        for (int j = 4; j < sheetSingle.getPhysicalNumberOfRows() - 2; j++) {
+
+                            HSSFRow rowSingle = sheetSingle.getRow(j);
+                            HSSFRow rowTemplate = templateSheet.createRow(j - 4);
+
+                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                            while (cellIterator.hasNext()) {
+                                Cell cellIn = cellIterator.next();
+                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                                switch (cellIn.getCellType()) {
+                                    case BLANK:
+                                        break;
+
+                                    case BOOLEAN:
+                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                        break;
+
+                                    case ERROR:
+                                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                                        break;
+
+                                    case FORMULA:
+                                        cellOut.setCellFormula(cellIn.getCellFormula());
+                                        break;
+
+                                    case NUMERIC:
+                                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                                        break;
+
+                                    case STRING:
+                                        cellOut.setCellValue(cellIn.getStringCellValue());
+                                        break;
+                                }
+                            }
+                        }
+                    } else if (sheetSingle.getRow(7).getCell(1,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
+
+                        String datecell = sheetSingle.getRow(7).getCell(2).toString();
+                        int predate = datecell.lastIndexOf(' ');
+                        dateOfDocument = datecell.substring(predate + 1);
+                        reestr_type = 2;
+
+                        for (int j = 7; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
+
+                            HSSFRow rowSingle = sheetSingle.getRow(j);
+                            HSSFRow rowTemplate = templateSheet.createRow(j - 7);
+
+                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                            while (cellIterator.hasNext()) {
+                                Cell cellIn = cellIterator.next();
+                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                                switch (cellIn.getCellType()) {
+                                    case BLANK:
+                                        break;
+
+                                    case BOOLEAN:
+                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                        break;
+
+                                    case ERROR:
+                                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                                        break;
+
+                                    case FORMULA:
+                                        cellOut.setCellFormula(cellIn.getCellFormula());
+                                        break;
+
+                                    case NUMERIC:
+                                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                                        break;
+
+                                    case STRING:
+                                        cellOut.setCellValue(cellIn.getStringCellValue());
+                                        break;
+                                }
+                            }
+                        }
+                    } else if (sheetSingle.getRow(8).getCell(1,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Оптiма-Фарм")) {
+
+                        String datecell = sheetSingle.getRow(9).getCell(2).toString();
+                        int predate = datecell.lastIndexOf(' ');
+                        dateOfDocument = datecell.substring(predate + 1);
+                        reestr_type = 3;
+
+                        for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows() - 3; j++) {
+
+                            HSSFRow rowSingle = sheetSingle.getRow(j);
+                            HSSFRow rowTemplate = templateSheet.createRow(j - 8);
+
+                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                            while (cellIterator.hasNext()) {
+                                Cell cellIn = cellIterator.next();
+                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                                switch (cellIn.getCellType()) {
+                                    case BLANK:
+                                        break;
+
+                                    case BOOLEAN:
+                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                        break;
+
+                                    case ERROR:
+                                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                                        break;
+
+                                    case FORMULA:
+                                        cellOut.setCellFormula(cellIn.getCellFormula());
+                                        break;
+
+                                    case NUMERIC:
+                                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                                        break;
+
+                                    case STRING:
+                                        cellOut.setCellValue(cellIn.getStringCellValue());
+                                        break;
+                                }
                             }
                         }
                     }
-                } else if (sheetSingle.getRow(4).getCell(1,
-                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ВЕНТА. ЛТД")) {
-
-                    String datecell = sheetSingle.getRow(4).getCell(2).toString();
-                    int predate = datecell.lastIndexOf(' ');
-                    dateOfDocument = datecell.substring(predate + 1);
-                    reestr_type = 1;
-
-                    for (int j = 4; j < sheetSingle.getPhysicalNumberOfRows() - 2; j++) {
-
-                        HSSFRow rowSingle = sheetSingle.getRow(j);
-                        HSSFRow rowTemplate = templateSheet.createRow(j - 4);
-
-                        Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                        while (cellIterator.hasNext()) {
-                            Cell cellIn = cellIterator.next();
-                            Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                            switch (cellIn.getCellType()) {
-                                case BLANK:
-                                    break;
-
-                                case BOOLEAN:
-                                    cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                    break;
-
-                                case ERROR:
-                                    cellOut.setCellValue(cellIn.getErrorCellValue());
-                                    break;
-
-                                case FORMULA:
-                                    cellOut.setCellFormula(cellIn.getCellFormula());
-                                    break;
-
-                                case NUMERIC:
-                                    cellOut.setCellValue(cellIn.getNumericCellValue());
-                                    break;
-
-                                case STRING:
-                                    cellOut.setCellValue(cellIn.getStringCellValue());
-                                    break;
-                            }
-                        }
-                    }
-                } else if (sheetSingle.getRow(7).getCell(1,
-                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
-
-                    String datecell = sheetSingle.getRow(7).getCell(2).toString();
-                    int predate = datecell.lastIndexOf(' ');
-                    dateOfDocument = datecell.substring(predate + 1);
-                    reestr_type = 2;
-
-                    for (int j = 7; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
-
-                        HSSFRow rowSingle = sheetSingle.getRow(j);
-                        HSSFRow rowTemplate = templateSheet.createRow(j - 7);
-
-                        Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                        while (cellIterator.hasNext()) {
-                            Cell cellIn = cellIterator.next();
-                            Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                            switch (cellIn.getCellType()) {
-                                case BLANK:
-                                    break;
-
-                                case BOOLEAN:
-                                    cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                    break;
-
-                                case ERROR:
-                                    cellOut.setCellValue(cellIn.getErrorCellValue());
-                                    break;
-
-                                case FORMULA:
-                                    cellOut.setCellFormula(cellIn.getCellFormula());
-                                    break;
-
-                                case NUMERIC:
-                                    cellOut.setCellValue(cellIn.getNumericCellValue());
-                                    break;
-
-                                case STRING:
-                                    cellOut.setCellValue(cellIn.getStringCellValue());
-                                    break;
-                            }
-                        }
-                    }
-                } else if (sheetSingle.getRow(8).getCell(1,
-                        Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Оптiма-Фарм")) {
-
-                    String datecell = sheetSingle.getRow(9).getCell(2).toString();
-                    int predate = datecell.lastIndexOf(' ');
-                    dateOfDocument = datecell.substring(predate + 1);
-                    reestr_type = 3;
-
-                    for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows() - 3; j++) {
-
-                        HSSFRow rowSingle = sheetSingle.getRow(j);
-                        HSSFRow rowTemplate = templateSheet.createRow(j - 8);
-
-                        Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                        while (cellIterator.hasNext()) {
-                            Cell cellIn = cellIterator.next();
-                            Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                            switch (cellIn.getCellType()) {
-                                case BLANK:
-                                    break;
-
-                                case BOOLEAN:
-                                    cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                    break;
-
-                                case ERROR:
-                                    cellOut.setCellValue(cellIn.getErrorCellValue());
-                                    break;
-
-                                case FORMULA:
-                                    cellOut.setCellFormula(cellIn.getCellFormula());
-                                    break;
-
-                                case NUMERIC:
-                                    cellOut.setCellValue(cellIn.getNumericCellValue());
-                                    break;
-
-                                case STRING:
-                                    cellOut.setCellValue(cellIn.getStringCellValue());
-                                    break;
-                            }
-                        }
-                    }
+                    convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
+                } catch (Exception e) {
+                    System.out.println("Неизвестный поставщик");
                 }
-                convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
-            } catch (Exception e) {
-                System.out.println("Неизвестный поставщик");
             }
+        }
+    }
+
+    private static void galaMagic(String wbname) {
+        File file = new File(wbname);
+        try {
+            Sheet sheet = SpreadSheet.createFromFile(file).getSheet(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void deltaMagic(HSSFWorkbook wbToProcess, String wbname) {
+        String dateOfDocument;
+        int reestr_type = 6;
+
+        HSSFWorkbook templatewb = new HSSFWorkbook();
+        templatewb.createSheet("TempSheet");
+        HSSFSheet sheetSingle = wbToProcess.getSheetAt(0);
+        HSSFSheet templateSheet = templatewb.getSheetAt(0);
+
+        String findFirstRow = "\"ДЕЛЬТА МЕДІКЕЛ\" ліцензія";
+        int firstRow = 0;
+
+        for (Row row : sheetSingle) {
+            if (row.getCell(2) != null) {
+                if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
+                    firstRow = row.getRowNum();
+                    break;
+                }
+            }
+        }
+
+        int rowCount = 0;
+        for (Row row : sheetSingle) {
+            if (row.getCell(2) != null) {
+                if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
+                    rowCount++;
+                }
+            }
+        }
+
+        String datecell = sheetSingle.getRow(firstRow).getCell(8).toString();
+        int predate = datecell.lastIndexOf(' ');
+        dateOfDocument = datecell.substring(predate + 1);
+
+        for (int i = firstRow; i<(firstRow + rowCount/2); i++) {
+
+            HSSFRow rowSingle = sheetSingle.getRow(i);
+            HSSFRow rowTemplate = templateSheet.createRow( i - 18 + rowCount/2);
+
+            Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+            while (cellIterator.hasNext()) {
+                Cell cellIn = cellIterator.next();
+                if (cellIn.getCellType() == CellType.BLANK) {
+                    continue;
+                }
+                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                switch (cellIn.getCellType()) {
+                    case BOOLEAN:
+                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                        break;
+
+                    case ERROR:
+                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                        break;
+
+                    case FORMULA:
+                        cellOut.setCellFormula(cellIn.getCellFormula());
+                        break;
+
+                    case NUMERIC:
+                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                        break;
+
+                    case STRING:
+                        if (cellIn.getStringCellValue().equals("Позитивний")) {
+                            cellOut.setCellValue("Відповідає");
+                        } else {
+                            cellOut.setCellValue(cellIn.getStringCellValue());
+                        }
+                        break;
+                }
+            }
+        }
+        try {
+            convertToPdf(templatewb, wbname, dateOfDocument, reestr_type);
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -352,6 +451,9 @@ class Convertor {
                 break;
             case (1):
                 columnWidths = new float[]{(float) 1.5, (float) 5.2, 4, 7, 5, 3, 4, 4, 4, 5};
+                break;
+            case (6):
+                columnWidths = new float[]{(float) 1.5, 5, (float) 4.4, 7, 5, 3, 4, 4, 4, 5};
                 break;
             default:
                 columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
