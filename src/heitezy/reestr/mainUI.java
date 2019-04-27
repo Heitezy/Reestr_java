@@ -125,6 +125,7 @@ class mainUI {
             String outpath = textField2.getText();
             try {
                 Convertor.convert(inpath, outpath);
+                JOptionPane.showMessageDialog(panel1, "Конвертация завершена");
             } catch (IOException e) {
                 e.printStackTrace();
             }
