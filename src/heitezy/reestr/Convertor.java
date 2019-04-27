@@ -448,7 +448,7 @@ class Convertor {
 
         PdfPTable table = new PdfPTable(columnWidths);
         table.setWidthPercentage(90);
-        BaseFont arial = BaseFont.createFont("/resources/Arial.ttf", BaseFont.IDENTITY_H, true);
+        BaseFont arial = BaseFont.createFont("resources/Arial.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +
@@ -544,7 +544,7 @@ class Convertor {
         footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
 
-        Image image = Image.getInstance("sign.jpg");
+        Image image = Image.getInstance("resources/sign.jpg");
         PdfPCell image_cell = new PdfPCell(image);
         switch (reestr_type) {
             case (3):
