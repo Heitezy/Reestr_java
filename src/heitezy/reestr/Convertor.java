@@ -13,8 +13,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.jopendocument.dom.spreadsheet.Sheet;
-import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -82,18 +80,16 @@ class Convertor {
 
             if ((wbname[i].substring(wbname[i].lastIndexOf(File.separator)).contains("Delta"))) {
                 deltaMagic(wbToProcess[i], wbname[i]);
-            } else if ((wbname[i].substring(wbname[i].lastIndexOf(File.separator)).contains("ГФР"))) {
-                galaMagic(wbname[i]);
             } else {
-                String dateOfDocument = null;
-                int reestr_type = 0;
-
-                HSSFWorkbook templatewb = new HSSFWorkbook();
-                templatewb.createSheet("TempSheet");
-                HSSFSheet sheetSingle = wbToProcessSingle.getSheetAt(0);
-                HSSFSheet templateSheet = templatewb.getSheetAt(0);
-
                 try {
+                    String dateOfDocument = null;
+                    int reestr_type = 0;
+
+                    HSSFWorkbook templatewb = new HSSFWorkbook();
+                    templatewb.createSheet("TempSheet");
+                    HSSFSheet sheetSingle = wbToProcessSingle.getSheetAt(0);
+                    HSSFSheet templateSheet = templatewb.getSheetAt(0);
+
                     if (sheetSingle.getRow(2).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Юніфарма")) {
 
@@ -280,15 +276,6 @@ class Convertor {
                     System.out.println("Неизвестный поставщик");
                 }
             }
-        }
-    }
-
-    private static void galaMagic(String wbname) {
-        File file = new File(wbname);
-        try {
-            Sheet sheet = SpreadSheet.createFromFile(file).getSheet(0);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
