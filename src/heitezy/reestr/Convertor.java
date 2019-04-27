@@ -448,7 +448,7 @@ class Convertor {
 
         PdfPTable table = new PdfPTable(columnWidths);
         table.setWidthPercentage(90);
-        BaseFont arial = BaseFont.createFont("ArialMT.ttf", BaseFont.IDENTITY_H, true);
+        BaseFont arial = BaseFont.createFont("/resources/Arial.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +

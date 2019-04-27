@@ -20,9 +20,9 @@ class Organization extends JDialog {
         setLocationRelativeTo(contentPane);
         setLocation(450,10);
         getRootPane().setDefaultButton(buttonOK);
-        File file = new File("org.txt");
+        File file = new File("/resources/org.txt");
         if (file.exists()) {
-            organization.setText(new String(Files.readAllBytes(Paths.get("org.txt"))));
+            organization.setText(new String(Files.readAllBytes(Paths.get("/resources/org.txt"))));
         }
 
         buttonOK.addActionListener(e -> onOK());
@@ -42,7 +42,7 @@ class Organization extends JDialog {
     }
 
     private void onOK() {
-        try (PrintStream out = new PrintStream(new FileOutputStream("org.txt"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream("/resources/org.txt"))) {
             out.print(organization.getText());
             organizationtext = organization.getText();
         } catch (FileNotFoundException e) {

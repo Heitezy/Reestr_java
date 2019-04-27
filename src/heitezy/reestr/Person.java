@@ -20,9 +20,9 @@ class Person extends JDialog {
         setLocationRelativeTo(contentPane);
         setLocation(10,10);
         getRootPane().setDefaultButton(buttonOK);
-        File file = new File("person.txt");
+        File file = new File("/resources/person.txt");
         if (file.exists()) {
-            textFieldPerson.setText(new String(Files.readAllBytes(Paths.get("person.txt"))));
+            textFieldPerson.setText(new String(Files.readAllBytes(Paths.get("/resources/person.txt"))));
         }
 
         buttonOK.addActionListener(e -> {
@@ -48,7 +48,7 @@ class Person extends JDialog {
     }
 
     private void onOK() throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream("person.txt"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream("/resources/person.txt"))) {
             out.print(textFieldPerson.getText());
             personname = textFieldPerson.getText();
         }

@@ -31,41 +31,41 @@ class mainUI {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setContentPane(panel1);
 
-        File filein = new File("inputpath.txt");
-        File fileout = new File("outputpath.txt");
-        File fileperson = new File("person.txt");
-        File fileorg = new File("org.txt");
+        File filein = new File("/resources/inputpath.txt");
+        File fileout = new File("/resources/outputpath.txt");
+        File fileperson = new File("/resources/person.txt");
+        File fileorg = new File("/resources/org.txt");
 
 
         if (filein.exists()) {
-            String inputpath = new String(Files.readAllBytes(Paths.get("inputpath.txt")));
+            String inputpath = new String(Files.readAllBytes(Paths.get("/resources/inputpath.txt")));
             textField1.setText(inputpath);
         }
 
         if (fileout.exists()) {
-            String outputpath = new String(Files.readAllBytes(Paths.get("outputpath.txt")));
+            String outputpath = new String(Files.readAllBytes(Paths.get("/resources/outputpath.txt")));
             textField2.setText(outputpath);
         }
 
         if (fileperson.exists()) {
-            personname = new String(Files.readAllBytes(Paths.get("person.txt")));
+            personname = new String(Files.readAllBytes(Paths.get("/resources/person.txt")));
         }
 
         if (fileorg.exists()) {
-            organizationtext = new String(Files.readAllBytes(Paths.get("org.txt")));
+            organizationtext = new String(Files.readAllBytes(Paths.get("/resources/org.txt")));
         }
 
         exitButton.addActionListener(actionEvent -> System.exit(0));
 
         browseButton1.addActionListener(actionEvent -> {
             JTextField textField = textField1;
-            String filename = "inputpath.txt";
+            String filename = "/resources/inputpath.txt";
             browseButton(textField, filename);
         });
 
         browseButton2.addActionListener(actionEvent -> {
             JTextField textField = textField2;
-            String filename = "outputpath.txt";
+            String filename = "/resources/outputpath.txt";
             browseButton(textField, filename);
         });
 
@@ -97,7 +97,7 @@ class mainUI {
                 OutputStream outStream;
                 try {
                     File source = new File(filePath);
-                    File dest = new File(System.getProperty("user.dir"), "sign.jpg");
+                    File dest = new File(System.getProperty("user.dir"), "/resources/sign.jpg");
                     inStream = new FileInputStream(source);
                     outStream = new FileOutputStream(dest);
 
