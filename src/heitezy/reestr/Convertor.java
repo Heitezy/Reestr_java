@@ -281,7 +281,7 @@ class Convertor {
 
     private static void deltaMagic(HSSFWorkbook wbToProcess, String wbname) {
         String dateOfDocument;
-        int reestr_type = 6;
+        int reestr_type = 5;
 
         HSSFWorkbook templatewb = new HSSFWorkbook();
         templatewb.createSheet("TempSheet");
@@ -431,23 +431,23 @@ class Convertor {
         float[] columnWidths;
         switch (reestr_type) {
             case (3):
-                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5, 0};
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4,(float) 3.5,(float) 3.5,(float) 4.5, 0};
                 break;
             case (2):
-                columnWidths = new float[]{(float) 1.5, 5, (float) 4.3, 7, 5, 3, 4, 4, 4, 5};
+                columnWidths = new float[]{(float) 1.5, 5, (float) 4.3, 7, 5, 3, 4,(float) 3.5,(float) 3.5,(float) 4.5};
                 break;
             case (1):
-                columnWidths = new float[]{(float) 1.5, (float) 5.2, 4, 7, 5, 3, 4, 4, 4, 5};
+                columnWidths = new float[]{(float) 1.5, (float) 5.2, 4, 7, 5, 3, 4,(float) 3.5,(float) 3.5,(float) 4.5};
                 break;
-            case (6):
-                columnWidths = new float[]{(float) 1.5, 5, (float) 4.4, 7, 5, 3, 4, 4, 4, 5};
+            case (5):
+                columnWidths = new float[]{(float) 1.5, (float) 5.8, (float) 4.4, 7, 5, 3, 4,(float) 3.5,(float) 3.5,(float) 4.5};
                 break;
             default:
-                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4, 4, 4, 5};
+                columnWidths = new float[]{(float) 1.5, 5, 4, 7, 5, 3, 4,(float) 3.5,(float) 3.5,(float) 4.5};
         }
 
         PdfPTable table = new PdfPTable(columnWidths);
-        table.setWidthPercentage(90);
+        table.setWidthPercentage(100);
         BaseFont arial = BaseFont.createFont("resources/Arial.ttf", BaseFont.IDENTITY_H, true);
         Font font = new Font(arial, 10, NORMAL, GrayColor.GRAYBLACK);
 
