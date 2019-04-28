@@ -27,6 +27,8 @@ import static com.itextpdf.text.Font.NORMAL;
 
 class Convertor {
 
+    private static final String[] seller = {"default", "Вента", "БАДМ", "Оптіма", "Юніфарма", "Дельта"};
+
     static void convert(String inputpath, String outputpath) throws IOException {
         File inputfiles = new File(inputpath);
         ArrayList<File> listoffiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(inputfiles.listFiles((file, filterstring) -> {
@@ -74,7 +76,6 @@ class Convertor {
     }
 
     private static void magic(HSSFWorkbook[] wbToProcess, String[] wbname) {
-
         for (int i = 0; i < wbToProcess.length; i++) {
             HSSFWorkbook wbToProcessSingle = wbToProcess[i];
 
@@ -135,6 +136,7 @@ class Convertor {
                                 }
                             }
                         }
+                        wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(4).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ВЕНТА. ЛТД")) {
 
@@ -180,6 +182,7 @@ class Convertor {
                                 }
                             }
                         }
+                        wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(7).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
 
@@ -225,6 +228,7 @@ class Convertor {
                                 }
                             }
                         }
+                        wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(8).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Оптiма-Фарм")) {
 
@@ -270,6 +274,7 @@ class Convertor {
                                 }
                             }
                         }
+                        wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     }
                     convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
                 } catch (Exception e) {
@@ -354,6 +359,7 @@ class Convertor {
                 }
             }
         }
+        wbname = mkdirs(seller[reestr_type], wbname, dateOfDocument);
         try {
             convertToPdf(templatewb, wbname, dateOfDocument, reestr_type);
         } catch (DocumentException | IOException e) {
@@ -564,5 +570,56 @@ class Convertor {
 
         xls_2_pdf.add(table);
         xls_2_pdf.close();
+    }
+
+    private static String mkdirs(String seller, String wbname, String dateOfDocument) {
+        String month = dateOfDocument.substring(dateOfDocument.indexOf("."), dateOfDocument.lastIndexOf("."));
+        switch (month) {
+            case (".01"):
+                month = "Январь";
+                break;
+            case (".02"):
+                month = "Февраль";
+                break;
+            case (".03"):
+                month = "Март";
+                break;
+            case (".04"):
+                month = "Апрель";
+                break;
+            case (".05"):
+                month = "Май";
+                break;
+            case (".06"):
+                month = "Июнь";
+                break;
+            case (".07"):
+                month = "Июль";
+                break;
+            case (".08"):
+                month = "Август";
+                break;
+            case (".09"):
+                month = "Сентябрь";
+                break;
+            case (".10"):
+                month = "Октябрь";
+                break;
+            case (".11"):
+                month = "Ноябрь";
+                break;
+            case (".12"):
+                month = "Декабрь";
+                break;
+            default:
+        }
+        wbname = wbname.replace(wbname.substring(wbname.lastIndexOf(File.separator)),
+                File.separator + seller + File.separator + dateOfDocument.substring(6, 10)+ File.separator
+                        + month + File.separator + dateOfDocument + wbname.substring(wbname.lastIndexOf(File.separator)));
+        String directory = wbname.substring(0, wbname.lastIndexOf(File.separator));
+        File d = new File (directory);
+        //noinspection ResultOfMethodCallIgnored
+        d.mkdirs();
+        return wbname;
     }
 }
