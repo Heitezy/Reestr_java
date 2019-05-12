@@ -285,85 +285,127 @@ class Convertor {
     }
 
     private static void deltaMagic(HSSFWorkbook wbToProcess, String wbname) {
-        String dateOfDocument;
-        int reestr_type = 5;
-
-        HSSFWorkbook templatewb = new HSSFWorkbook();
-        templatewb.createSheet("TempSheet");
-        HSSFSheet sheetSingle = wbToProcess.getSheetAt(0);
-        HSSFSheet templateSheet = templatewb.getSheetAt(0);
-
-        String findFirstRow = "\"ДЕЛЬТА МЕДІКЕЛ\" ліцензія";
-        int firstRow = 0;
-
-        for (Row row : sheetSingle) {
-            if (row.getCell(2) != null) {
-                if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
-                    firstRow = row.getRowNum();
-                    break;
-                }
-            }
-        }
-
-        int rowCount = 0;
-        for (Row row : sheetSingle) {
-            if (row.getCell(2) != null) {
-                if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
-                    rowCount++;
-                }
-            }
-        }
-
-        String datecell = sheetSingle.getRow(firstRow).getCell(8).toString();
-        int predate = datecell.lastIndexOf(' ');
-        dateOfDocument = datecell.substring(predate + 1);
-
-        for (int i = firstRow; i<(firstRow + rowCount/2); i++) {
-
-            HSSFRow rowSingle = sheetSingle.getRow(i);
-            HSSFRow rowTemplate = templateSheet.createRow( i - 18 + rowCount/2);
-
-            Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-            while (cellIterator.hasNext()) {
-                Cell cellIn = cellIterator.next();
-                if (cellIn.getCellType() == CellType.BLANK) {
-                    continue;
-                }
-                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                switch (cellIn.getCellType()) {
-                    case BOOLEAN:
-                        cellOut.setCellValue(cellIn.getBooleanCellValue());
-                        break;
-
-                    case ERROR:
-                        cellOut.setCellValue(cellIn.getErrorCellValue());
-                        break;
-
-                    case FORMULA:
-                        cellOut.setCellFormula(cellIn.getCellFormula());
-                        break;
-
-                    case NUMERIC:
-                        cellOut.setCellValue(cellIn.getNumericCellValue());
-                        break;
-
-                    case STRING:
-                        if (cellIn.getStringCellValue().equals("Позитивний")) {
-                            cellOut.setCellValue("Відповідає");
-                        } else {
-                            cellOut.setCellValue(cellIn.getStringCellValue());
-                        }
-                        break;
-                }
-            }
-        }
-        wbname = mkdirs(seller[reestr_type], wbname, dateOfDocument);
         try {
+            String dateOfDocument;
+            int reestr_type = 5;
+
+            HSSFWorkbook templatewb = new HSSFWorkbook();
+            templatewb.createSheet("TempSheet");
+            HSSFSheet sheetSingle = wbToProcess.getSheetAt(0);
+            HSSFSheet templateSheet = templatewb.getSheetAt(0);
+
+            String findFirstRow = "\"ДЕЛЬТА МЕДІКЕЛ\" ліцензія";
+            int firstRow = 0;
+
+            for (Row row : sheetSingle) {
+                if (row.getCell(2) != null) {
+                    if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
+                        firstRow = row.getRowNum();
+                        break;
+                    }
+                }
+            }
+
+            int rowCount = 0;
+            for (Row row : sheetSingle) {
+                if (row.getCell(2) != null) {
+                    if (row.getCell(2).getRichStringCellValue().getString().contains(findFirstRow)) {
+                        rowCount++;
+                    }
+                }
+            }
+
+            String datecell = sheetSingle.getRow(firstRow).getCell(8).toString();
+            int predate = datecell.lastIndexOf(' ');
+            dateOfDocument = datecell.substring(predate + 1);
+
+            if (firstRow == 11) {
+                for (int i = firstRow; i < (firstRow + rowCount); i++) {
+
+                    HSSFRow rowSingle = sheetSingle.getRow(i);
+                    HSSFRow rowTemplate = templateSheet.createRow(i - 2);
+
+                    Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                    while (cellIterator.hasNext()) {
+                        Cell cellIn = cellIterator.next();
+                        if (cellIn.getCellType() == CellType.BLANK) {
+                            continue;
+                        }
+                        Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                        switch (cellIn.getCellType()) {
+                            case BOOLEAN:
+                                cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                break;
+
+                            case ERROR:
+                                cellOut.setCellValue(cellIn.getErrorCellValue());
+                                break;
+
+                            case FORMULA:
+                                cellOut.setCellFormula(cellIn.getCellFormula());
+                                break;
+
+                            case NUMERIC:
+                                cellOut.setCellValue(cellIn.getNumericCellValue());
+                                break;
+
+                            case STRING:
+                                cellOut.setCellValue(cellIn.getStringCellValue());
+                                break;
+                        }
+                    }
+                    Cell cellOut = rowTemplate.createCell(22, CellType.STRING);
+                    cellOut.setCellValue("Відповідає");
+                }
+            } else {
+                for (int i = firstRow; i < (firstRow + rowCount / 2); i++) {
+
+                    HSSFRow rowSingle = sheetSingle.getRow(i);
+                    HSSFRow rowTemplate = templateSheet.createRow(i - 18 + rowCount / 2);
+
+                    Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+                    while (cellIterator.hasNext()) {
+                        Cell cellIn = cellIterator.next();
+                        if (cellIn.getCellType() == CellType.BLANK) {
+                            continue;
+                        }
+                        Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                        switch (cellIn.getCellType()) {
+                            case BOOLEAN:
+                                cellOut.setCellValue(cellIn.getBooleanCellValue());
+                                break;
+
+                            case ERROR:
+                                cellOut.setCellValue(cellIn.getErrorCellValue());
+                                break;
+
+                            case FORMULA:
+                                cellOut.setCellFormula(cellIn.getCellFormula());
+                                break;
+
+                            case NUMERIC:
+                                cellOut.setCellValue(cellIn.getNumericCellValue());
+                                break;
+
+                            case STRING:
+                                if (cellIn.getStringCellValue().equals("Позитивний")) {
+                                    cellOut.setCellValue("Відповідає");
+                                } else {
+                                    cellOut.setCellValue(cellIn.getStringCellValue());
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            wbname = mkdirs(seller[reestr_type], wbname, dateOfDocument);
             convertToPdf(templatewb, wbname, dateOfDocument, reestr_type);
-        } catch (DocumentException | IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Неизвестный формат");
         }
     }
 
