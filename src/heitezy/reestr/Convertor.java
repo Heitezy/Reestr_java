@@ -99,43 +99,7 @@ class Convertor {
                         dateOfDocument = datecell.substring(predate + 1);
                         reestr_type = 4;
 
-                        for (int j = 2; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
-
-                            HSSFRow rowSingle = sheetSingle.getRow(j);
-                            HSSFRow rowTemplate = templateSheet.createRow(j - 2);
-
-                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                            while (cellIterator.hasNext()) {
-                                Cell cellIn = cellIterator.next();
-                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                                switch (cellIn.getCellType()) {
-                                    case BLANK:
-                                        break;
-
-                                    case BOOLEAN:
-                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                        break;
-
-                                    case ERROR:
-                                        cellOut.setCellValue(cellIn.getErrorCellValue());
-                                        break;
-
-                                    case FORMULA:
-                                        cellOut.setCellFormula(cellIn.getCellFormula());
-                                        break;
-
-                                    case NUMERIC:
-                                        cellOut.setCellValue(cellIn.getNumericCellValue());
-                                        break;
-
-                                    case STRING:
-                                        cellOut.setCellValue(cellIn.getStringCellValue());
-                                        break;
-                                }
-                            }
-                        }
+                        cellIterate(sheetSingle, templateSheet, 2, 0);
                         wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(4).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ВЕНТА. ЛТД")) {
@@ -145,43 +109,7 @@ class Convertor {
                         dateOfDocument = datecell.substring(predate + 1);
                         reestr_type = 1;
 
-                        for (int j = 4; j < sheetSingle.getPhysicalNumberOfRows() - 2; j++) {
-
-                            HSSFRow rowSingle = sheetSingle.getRow(j);
-                            HSSFRow rowTemplate = templateSheet.createRow(j - 4);
-
-                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                            while (cellIterator.hasNext()) {
-                                Cell cellIn = cellIterator.next();
-                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                                switch (cellIn.getCellType()) {
-                                    case BLANK:
-                                        break;
-
-                                    case BOOLEAN:
-                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                        break;
-
-                                    case ERROR:
-                                        cellOut.setCellValue(cellIn.getErrorCellValue());
-                                        break;
-
-                                    case FORMULA:
-                                        cellOut.setCellFormula(cellIn.getCellFormula());
-                                        break;
-
-                                    case NUMERIC:
-                                        cellOut.setCellValue(cellIn.getNumericCellValue());
-                                        break;
-
-                                    case STRING:
-                                        cellOut.setCellValue(cellIn.getStringCellValue());
-                                        break;
-                                }
-                            }
-                        }
+                        cellIterate(sheetSingle, templateSheet, 4, 2);
                         wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(7).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
@@ -191,43 +119,7 @@ class Convertor {
                         dateOfDocument = datecell.substring(predate + 1);
                         reestr_type = 2;
 
-                        for (int j = 7; j < sheetSingle.getPhysicalNumberOfRows(); j++) {
-
-                            HSSFRow rowSingle = sheetSingle.getRow(j);
-                            HSSFRow rowTemplate = templateSheet.createRow(j - 7);
-
-                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                            while (cellIterator.hasNext()) {
-                                Cell cellIn = cellIterator.next();
-                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                                switch (cellIn.getCellType()) {
-                                    case BLANK:
-                                        break;
-
-                                    case BOOLEAN:
-                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                        break;
-
-                                    case ERROR:
-                                        cellOut.setCellValue(cellIn.getErrorCellValue());
-                                        break;
-
-                                    case FORMULA:
-                                        cellOut.setCellFormula(cellIn.getCellFormula());
-                                        break;
-
-                                    case NUMERIC:
-                                        cellOut.setCellValue(cellIn.getNumericCellValue());
-                                        break;
-
-                                    case STRING:
-                                        cellOut.setCellValue(cellIn.getStringCellValue());
-                                        break;
-                                }
-                            }
-                        }
+                        cellIterate(sheetSingle, templateSheet, 7, 0);
                         wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     } else if (sheetSingle.getRow(8).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("Оптiма-Фарм")) {
@@ -237,43 +129,7 @@ class Convertor {
                         dateOfDocument = datecell.substring(predate + 1);
                         reestr_type = 3;
 
-                        for (int j = 8; j < sheetSingle.getPhysicalNumberOfRows() - 3; j++) {
-
-                            HSSFRow rowSingle = sheetSingle.getRow(j);
-                            HSSFRow rowTemplate = templateSheet.createRow(j - 8);
-
-                            Iterator<Cell> cellIterator = rowSingle.cellIterator();
-
-                            while (cellIterator.hasNext()) {
-                                Cell cellIn = cellIterator.next();
-                                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
-
-                                switch (cellIn.getCellType()) {
-                                    case BLANK:
-                                        break;
-
-                                    case BOOLEAN:
-                                        cellOut.setCellValue(cellIn.getBooleanCellValue());
-                                        break;
-
-                                    case ERROR:
-                                        cellOut.setCellValue(cellIn.getErrorCellValue());
-                                        break;
-
-                                    case FORMULA:
-                                        cellOut.setCellFormula(cellIn.getCellFormula());
-                                        break;
-
-                                    case NUMERIC:
-                                        cellOut.setCellValue(cellIn.getNumericCellValue());
-                                        break;
-
-                                    case STRING:
-                                        cellOut.setCellValue(cellIn.getStringCellValue());
-                                        break;
-                                }
-                            }
-                        }
+                        cellIterate(sheetSingle, templateSheet, 8, 3);
                         wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
                     }
                     convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
@@ -663,5 +519,45 @@ class Convertor {
         //noinspection ResultOfMethodCallIgnored
         d.mkdirs();
         return wbname;
+    }
+
+    private static void cellIterate (HSSFSheet sourcesheet, HSSFSheet templatesheet, int row_offset, int cell_offset) {
+        for (int j = row_offset; j < sourcesheet.getPhysicalNumberOfRows() - cell_offset; j++) {
+
+            HSSFRow rowSingle = sourcesheet.getRow(j);
+            HSSFRow rowTemplate = templatesheet.createRow(j - row_offset);
+
+            Iterator<Cell> cellIterator = rowSingle.cellIterator();
+
+            while (cellIterator.hasNext()) {
+                Cell cellIn = cellIterator.next();
+                Cell cellOut = rowTemplate.createCell(cellIn.getColumnIndex(), cellIn.getCellType());
+
+                switch (cellIn.getCellType()) {
+                    case BLANK:
+                        break;
+
+                    case BOOLEAN:
+                        cellOut.setCellValue(cellIn.getBooleanCellValue());
+                        break;
+
+                    case ERROR:
+                        cellOut.setCellValue(cellIn.getErrorCellValue());
+                        break;
+
+                    case FORMULA:
+                        cellOut.setCellFormula(cellIn.getCellFormula());
+                        break;
+
+                    case NUMERIC:
+                        cellOut.setCellValue(cellIn.getNumericCellValue());
+                        break;
+
+                    case STRING:
+                        cellOut.setCellValue(cellIn.getStringCellValue());
+                        break;
+                }
+            }
+        }
     }
 }

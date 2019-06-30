@@ -4,8 +4,9 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ItemEvent;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 
 class mainUI {
     private JTextField textField1;
@@ -35,7 +36,11 @@ class mainUI {
         File fileout = new File("resources/outputpath.txt");
         File fileperson = new File("resources/person.txt");
         File fileorg = new File("resources/org.txt");
+        File file = new File("resources/checkbox");
 
+        if (file.exists()) {
+            deleteSourceFilesAfterCheckBox.setSelected(true);
+        }
 
         if (filein.exists()) {
             String inputpath = new String(Files.readAllBytes(Paths.get("resources/inputpath.txt")));
@@ -120,11 +125,21 @@ class mainUI {
         });
 
         convertButton.addActionListener(actionEvent -> {
-            //todo Progressbar and finish window
+            //todo Progressbar
             String inpath = textField1.getText();
             String outpath = textField2.getText();
             try {
                 Convertor.convert(inpath, outpath);
+                if (file.exists()) {
+                    Path directory = Paths.get(textField1.getText());
+                    Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                            Files.delete(file);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                }
                 JOptionPane.showMessageDialog(panel1, "Конвертация завершена");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -133,8 +148,16 @@ class mainUI {
 
         deleteSourceFilesAfterCheckBox.addItemListener(itemEvent -> {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                // todo
-                System.out.println("Checkbox");
+                PrintStream out = null;
+                try {
+                    out = new PrintStream(new FileOutputStream("resources/checkbox"));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                Objects.requireNonNull(out).print("checkbox");
+            } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
             }
         });
     }
