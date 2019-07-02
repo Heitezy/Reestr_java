@@ -25,10 +25,14 @@ class mainUI {
     static String organizationtext;
 
 
-    mainUI() throws IOException {
+    mainUI(boolean silence) throws IOException {
         JFrame f = new JFrame("Реестр");
         f.setSize(650, 220);
-        f.setVisible(true);
+        if (silence) {
+            f.setVisible(false);
+        } else {
+            f.setVisible(true);
+        }
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setContentPane(panel1);
 
@@ -140,7 +144,9 @@ class mainUI {
                         }
                     });
                 }
-                JOptionPane.showMessageDialog(panel1, "Конвертация завершена");
+                if (!silence) {
+                    JOptionPane.showMessageDialog(panel1, "Конвертация завершена");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -160,6 +166,11 @@ class mainUI {
                 file.delete();
             }
         });
+
+        if (silence) {
+            convertButton.doClick();
+            System.exit(0);
+        }
     }
 
     private void browseButton(JTextField textField, String filename) {
@@ -176,5 +187,4 @@ class mainUI {
             e.printStackTrace();
         }
     }
-
 }

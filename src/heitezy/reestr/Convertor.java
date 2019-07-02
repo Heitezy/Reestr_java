@@ -31,18 +31,22 @@ class Convertor {
 
     static void convert(String inputpath, String outputpath) throws IOException {
         File inputfiles = new File(inputpath);
-        ArrayList<File> listoffiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(inputfiles.listFiles((file, filterstring) -> {
-            if (filterstring.lastIndexOf('.') > 0) {
-                int lastIndex = filterstring.lastIndexOf('.');
-                String extension = filterstring.substring(lastIndex);
-                if (extension.equals(".xls")) {
-                    return true;
-                } else return extension.equals(".csv");
-            }
-            return false;
-        }))));
+        try {
+            ArrayList<File> listoffiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(inputfiles.listFiles((file, filterstring) -> {
+                if (filterstring.lastIndexOf('.') > 0) {
+                    int lastIndex = filterstring.lastIndexOf('.');
+                    String extension = filterstring.substring(lastIndex);
+                    if (extension.equals(".xls")) {
+                        return true;
+                    } else return extension.equals(".csv");
+                }
+                return false;
+            }))));
         HSSFWorkbook[] outputfiles = new HSSFWorkbook[listoffiles.size()];
         batchProcess(listoffiles, outputfiles, outputpath);
+        } catch (NullPointerException e) {
+            System.out.println("Папка пуста.");
+        }
     }
 
     private static void batchProcess(ArrayList<File> filesToProcess, HSSFWorkbook[] wbToProcess, String outputpath) throws IOException {
