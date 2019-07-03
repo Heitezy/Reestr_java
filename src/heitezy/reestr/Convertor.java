@@ -365,9 +365,6 @@ class Convertor {
             case (3):
                 header_cell.setColspan(11);
                 break;
-            case (2):
-                header_cell.setColspan(10);
-                break;
             default:
                 header_cell.setColspan(10);
         }
@@ -387,13 +384,6 @@ class Convertor {
                     if (i==9) {
                         column_cell.setColspan(2);
                     }
-                    table.addCell(column_cell);
-                }
-                break;
-            case (1):
-                for (int i=0; i<10; i++) {
-                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
-                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                     table.addCell(column_cell);
                 }
                 break;
@@ -424,10 +414,6 @@ class Convertor {
                         table.addCell(table_cell);
                         break;
                     case ERROR:
-                        table_cell = new PdfPCell(new Phrase(" ", font));
-                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                        table.addCell(table_cell);
-                        break;
                     case BLANK:
                         table_cell = new PdfPCell(new Phrase(" ", font));
                         table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -443,33 +429,31 @@ class Convertor {
             case (3):
                 footer_cell.setColspan(11);
                 break;
-            case (1):
-                footer_cell.setColspan(10);
-                break;
             default:
                 footer_cell.setColspan(10);
         }
         footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
 
-        Image image = Image.getInstance("resources/sign.jpg");
-        PdfPCell image_cell = new PdfPCell(image);
-        switch (reestr_type) {
-            case (3):
-                image_cell.setColspan(11);
-                break;
-            case (1):
-                image_cell.setColspan(10);
-                break;
-            default:
-                image_cell.setColspan(10);
+        File scan = new File("resources/sign.jpg");
+        if (!scan.exists()) {
+            System.out.println("Не выбран скан штампа.");
+        } else {
+            Image image = Image.getInstance("resources/sign.jpg");
+            PdfPCell image_cell = new PdfPCell(image);
+            switch (reestr_type) {
+                case (3):
+                    image_cell.setColspan(11);
+                    break;
+                default:
+                    image_cell.setColspan(10);
+            }
+            image_cell.setColspan(11);
+            image_cell.setPaddingLeft((float) 50);
+            image_cell.setFixedHeight((float) 100);
+            image_cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(image_cell);
         }
-        image_cell.setColspan(11);
-        image_cell.setPaddingLeft((float)50);
-        image_cell.setFixedHeight((float)100);
-        image_cell.setBorder(Rectangle.NO_BORDER);
-        table.addCell(image_cell);
-
         xls_2_pdf.add(table);
         xls_2_pdf.close();
     }

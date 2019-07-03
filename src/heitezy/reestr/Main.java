@@ -11,6 +11,7 @@ class Main {
             silence = true;
             }
         }
+        //todo some welcome screen and readme
         new mainUI(silence);
     }
 }

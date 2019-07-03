@@ -19,6 +19,7 @@ class Person extends JDialog {
         setModal(true);
         setLocationRelativeTo(contentPane);
         setLocation(10,10);
+        //todo Align to main window
         getRootPane().setDefaultButton(buttonOK);
         File file = new File("resources/person.txt");
         if (file.exists()) {

@@ -18,6 +18,7 @@ class Organization extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         setLocationRelativeTo(contentPane);
+        //todo Align to main window
         setLocation(450,10);
         getRootPane().setDefaultButton(buttonOK);
         File file = new File("resources/org.txt");

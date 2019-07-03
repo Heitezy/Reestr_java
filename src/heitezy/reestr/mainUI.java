@@ -36,6 +36,7 @@ class mainUI {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setContentPane(panel1);
 
+        //todo Settings in single file
         File filein = new File("resources/inputpath.txt");
         File fileout = new File("resources/outputpath.txt");
         File fileperson = new File("resources/person.txt");
@@ -96,7 +97,7 @@ class mainUI {
 
         signButton.addActionListener(actionEvent -> {
             JFileChooser FileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "gif", "png", "jpeg");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Файл изображения", "jpg", "gif", "png", "jpeg");
             FileChooser.setFileFilter(filter);
             int returnValue = FileChooser.showOpenDialog(signButton);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -119,12 +120,12 @@ class mainUI {
 
                     inStream.close();
                     outStream.close();
-                    System.out.println("File copied.");
+                    System.out.println("Файл скопирован.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("Canceled.");
+                System.out.println("Копирование прервано.");
             }
         });
 
@@ -132,6 +133,27 @@ class mainUI {
             //todo Progressbar
             String inpath = textField1.getText();
             String outpath = textField2.getText();
+
+            File scan = new File("resources/sign.jpg");
+
+            if (!silence) {
+                if (!scan.exists()) {
+                    Object[] options = {"Выбрать",
+                            "Отмена"};
+                    int n = JOptionPane.showOptionDialog(panel1,
+                            "Нужно указать скан штампа. Хотите выбрать?",
+                            "Скан штампа",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+                    //todo more logic to this dialog
+                    if (n == JOptionPane.YES_OPTION) {
+                        signButton.doClick();
+                    }
+                }
+            }
             try {
                 Convertor.convert(inpath, outpath);
                 if (file.exists()) {
@@ -139,6 +161,7 @@ class mainUI {
                     Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                            //todo filter maybe?
                             Files.delete(file);
                             return FileVisitResult.CONTINUE;
                         }
