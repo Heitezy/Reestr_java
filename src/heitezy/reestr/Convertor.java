@@ -404,7 +404,8 @@ class Convertor {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
             while (cellIterator.hasNext()) {
-                if (rowCount%2==0) {
+                if (rowCount%2==0 && reestr_type == 3) {
+                    //todo Optimize code here
                     Cell cell = cellIterator.next();
                     switch (cell.getCellType()) {
                         case STRING:
@@ -427,7 +428,7 @@ class Convertor {
                             table.addCell(table_cell);
                             break;
                     }
-                } else {
+                } else if (reestr_type == 3){
                     Cell cell = cellIterator.next();
                     switch (cell.getCellType()) {
                         case STRING:
@@ -447,6 +448,26 @@ class Convertor {
                             table_cell = new PdfPCell(new Phrase(" ", font));
                             table_cell.setVerticalAlignment(Element.ALIGN_TOP);
                             table_cell.disableBorderSide(TOP);
+                            table.addCell(table_cell);
+                            break;
+                    }
+                } else {
+                    Cell cell = cellIterator.next();
+                    switch (cell.getCellType()) {
+                        case STRING:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                            table.addCell(table_cell);
+                            break;
+                        case NUMERIC:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf((int) cell.getNumericCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                            table.addCell(table_cell);
+                            break;
+                        case ERROR:
+                        case BLANK:
+                            table_cell = new PdfPCell(new Phrase(" ", font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                             table.addCell(table_cell);
                             break;
                     }
@@ -480,11 +501,11 @@ class Convertor {
                 default:
                     image_cell.setColspan(10);
             }
-            image_cell.setColspan(11);
             image_cell.setPaddingLeft((float) 50);
             image_cell.setFixedHeight((float) 100);
             image_cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(image_cell);
+            table.keepRowsTogether(table.getLastCompletedRowIndex()-1);
         }
         xls_2_pdf.add(table);
         xls_2_pdf.close();
