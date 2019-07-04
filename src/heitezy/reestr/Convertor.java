@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import static com.itextpdf.text.Font.NORMAL;
+import static com.itextpdf.text.Rectangle.BOTTOM;
+import static com.itextpdf.text.Rectangle.TOP;
 
 
 class Convertor {
@@ -397,30 +399,60 @@ class Convertor {
 
         PdfPCell table_cell;
 
+        int rowCount = 0;
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
             while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                switch (cell.getCellType()) {
-                    case STRING:
-                        table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
-                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                        table.addCell(table_cell);
-                        break;
-                    case NUMERIC:
-                        table_cell = new PdfPCell(new Phrase(String.valueOf((int)cell.getNumericCellValue()), font));
-                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                        table.addCell(table_cell);
-                        break;
-                    case ERROR:
-                    case BLANK:
-                        table_cell = new PdfPCell(new Phrase(" ", font));
-                        table_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                        table.addCell(table_cell);
-                        break;
+                if (rowCount%2==0) {
+                    Cell cell = cellIterator.next();
+                    switch (cell.getCellType()) {
+                        case STRING:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+                            table_cell.disableBorderSide(BOTTOM);
+                            table.addCell(table_cell);
+                            break;
+                        case NUMERIC:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf((int) cell.getNumericCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+                            table_cell.disableBorderSide(BOTTOM);
+                            table.addCell(table_cell);
+                            break;
+                        case ERROR:
+                        case BLANK:
+                            table_cell = new PdfPCell(new Phrase(" ", font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+                            table_cell.disableBorderSide(BOTTOM);
+                            table.addCell(table_cell);
+                            break;
+                    }
+                } else {
+                    Cell cell = cellIterator.next();
+                    switch (cell.getCellType()) {
+                        case STRING:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf(cell.getRichStringCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_TOP);
+                            table_cell.disableBorderSide(TOP);
+                            table.addCell(table_cell);
+                            break;
+                        case NUMERIC:
+                            table_cell = new PdfPCell(new Phrase(String.valueOf((int) cell.getNumericCellValue()), font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_TOP);
+                            table_cell.disableBorderSide(TOP);
+                            table.addCell(table_cell);
+                            break;
+                        case ERROR:
+                        case BLANK:
+                            table_cell = new PdfPCell(new Phrase(" ", font));
+                            table_cell.setVerticalAlignment(Element.ALIGN_TOP);
+                            table_cell.disableBorderSide(TOP);
+                            table.addCell(table_cell);
+                            break;
+                    }
                 }
             }
+            rowCount++;
         }
 
         PdfPCell footer_cell = new PdfPCell(new Phrase("\nРезультат вхідного контролю якості лікарських засобів " +
