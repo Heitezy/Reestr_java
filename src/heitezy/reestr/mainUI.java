@@ -37,6 +37,7 @@ class mainUI {
         f.setContentPane(panel1);
 
         //todo Settings in single file
+        //todo default paths
         File filein = new File("resources/inputpath.txt");
         File fileout = new File("resources/outputpath.txt");
         File fileperson = new File("resources/person.txt");
@@ -169,6 +170,7 @@ class mainUI {
                 }
                 if (!silence) {
                     JOptionPane.showMessageDialog(panel1, "Конвертация завершена");
+                    //todo more dialogs for different cases
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -47,7 +47,7 @@ class Convertor {
         HSSFWorkbook[] outputfiles = new HSSFWorkbook[listoffiles.size()];
         batchProcess(listoffiles, outputfiles, outputpath);
         } catch (NullPointerException e) {
-            System.out.println("Папка пуста.");
+            System.out.println("Неверный путь к папке.");
         }
     }
 
@@ -140,7 +140,8 @@ class Convertor {
                     }
                     convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
                 } catch (Exception e) {
-                    System.out.println("Неизвестный поставщик");
+                    //todo move to new folder and show result dialog with path
+                    System.out.println("Не удалось конвертировать: " + wbname[i]);
                 }
             }
         }
@@ -363,12 +364,10 @@ class Convertor {
 
         PdfPCell header_cell = new PdfPCell(new Phrase("Реєстр\nлікарських засобів, " +
                 "які надійшли до суб'єкта господарювання\n" + mainUI.organizationtext +"\n ", font));
-        switch (reestr_type) {
-            case (3):
-                header_cell.setColspan(11);
-                break;
-            default:
-                header_cell.setColspan(10);
+        if (reestr_type == 3) {
+            header_cell.setColspan(11);
+        } else {
+            header_cell.setColspan(10);
         }
         header_cell.setVerticalAlignment(Element.ALIGN_CENTER);
         header_cell.setBorder(Rectangle.NO_BORDER);
@@ -378,23 +377,21 @@ class Convertor {
                 "Назва лікарського засобу та його лікарська форма, дата реєстрації та номер реєстраційного посвідчення",
                 "Назва виробника", "Номер серії", "Номер і дата сертифіката якості виробника", "Кількість одержаних упаковок",
                 "Термін придатності лікарського засобу", "Результат контролю уповноваженою особою"};
-        switch (reestr_type) {
-            case (3):
-                for (int i=0; i<10; i++) {
-                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
-                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                    if (i==9) {
-                        column_cell.setColspan(2);
-                    }
-                    table.addCell(column_cell);
+        if (reestr_type == 3) {
+            for (int i = 0; i < 10; i++) {
+                PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                if (i == 9) {
+                    column_cell.setColspan(2);
                 }
-                break;
-            default:
-                for (int i=0; i<10; i++) {
-                    PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
-                    column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(column_cell);
-                }
+                table.addCell(column_cell);
+            }
+        } else {
+            for (int i = 0; i < 10; i++) {
+                PdfPCell column_cell = new PdfPCell(new Phrase(columns[i], font));
+                column_cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(column_cell);
+            }
         }
 
         PdfPCell table_cell;
@@ -478,12 +475,10 @@ class Convertor {
 
         PdfPCell footer_cell = new PdfPCell(new Phrase("\nРезультат вхідного контролю якості лікарських засобів " +
                 "здійснив — уповноважена особа " + mainUI.personname + "\n" + dateOfDocument, font));
-        switch (reestr_type) {
-            case (3):
-                footer_cell.setColspan(11);
-                break;
-            default:
-                footer_cell.setColspan(10);
+        if (reestr_type == 3) {
+            footer_cell.setColspan(11);
+        } else {
+            footer_cell.setColspan(10);
         }
         footer_cell.setBorder(Rectangle.NO_BORDER);
         table.addCell(footer_cell);
@@ -494,12 +489,10 @@ class Convertor {
         } else {
             Image image = Image.getInstance("resources/sign.jpg");
             PdfPCell image_cell = new PdfPCell(image);
-            switch (reestr_type) {
-                case (3):
-                    image_cell.setColspan(11);
-                    break;
-                default:
-                    image_cell.setColspan(10);
+            if (reestr_type == 3) {
+                image_cell.setColspan(11);
+            } else {
+                image_cell.setColspan(10);
             }
             image_cell.setPaddingLeft((float) 50);
             image_cell.setFixedHeight((float) 100);
