@@ -29,7 +29,7 @@ import static com.itextpdf.text.Rectangle.TOP;
 
 class Convertor {
 
-    private static final String[] seller = {"default", "Вента", "БАДМ", "Оптіма", "Юніфарма", "Дельта"};
+    private static final String[] seller = {"default", "Вента", "БАДМ", "Оптіма", "Юніфарма", "Дельта", "Фіто-Лек"};
 
     static void convert(String inputpath, String outputpath) throws IOException {
         File inputfiles = new File(inputpath);
@@ -117,7 +117,17 @@ class Convertor {
 
                         cellIterate(sheetSingle, templateSheet, 4, 2);
                         wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
-                    } else if (sheetSingle.getRow(7).getCell(1,
+                    } /*else if (sheetSingle.getRow(5).getCell(1,
+                            Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("ФІТО-ЛЕК")) {
+
+                        String datecell = sheetSingle.getRow(5).getCell(2).toString();
+                        int predate = datecell.lastIndexOf(' ');
+                        dateOfDocument = datecell.substring(predate + 1);
+                        reestr_type = 6;
+
+                        cellIterate(sheetSingle, templateSheet, 5, 3);
+                        wbname[i] = mkdirs(seller[reestr_type], wbname[i], dateOfDocument);
+                    } */else if (sheetSingle.getRow(7).getCell(1,
                             Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().contains("БаДМ")) {
 
                         String datecell = sheetSingle.getRow(7).getCell(2).toString();
@@ -555,11 +565,11 @@ class Convertor {
         return wbname;
     }
 
-    private static void cellIterate (HSSFSheet sourcesheet, HSSFSheet templatesheet, int row_offset, int cell_offset) {
-        for (int j = row_offset; j < sourcesheet.getPhysicalNumberOfRows() - cell_offset; j++) {
+    private static void cellIterate (HSSFSheet sourcesheet, HSSFSheet templatesheet, int first_row_offset, int last_row_offset) {
+        for (int j = first_row_offset; j < sourcesheet.getPhysicalNumberOfRows() - last_row_offset; j++) {
 
             HSSFRow rowSingle = sourcesheet.getRow(j);
-            HSSFRow rowTemplate = templatesheet.createRow(j - row_offset);
+            HSSFRow rowTemplate = templatesheet.createRow(j - first_row_offset);
 
             Iterator<Cell> cellIterator = rowSingle.cellIterator();
 

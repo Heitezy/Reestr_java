@@ -8,8 +8,10 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 class MainWindow {
+    //todo fix path isnt saved to txt after manual input
     private JTextField inputPath;
     private JPanel panel;
+    //todo fix path isnt saved to txt after manual input
     private JTextField outputPath;
     private JButton browseOutputhPath;
     private JButton browseInputPath;
