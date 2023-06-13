@@ -47,7 +47,7 @@ class Convertor {
         HSSFWorkbook[] outputfiles = new HSSFWorkbook[listoffiles.size()];
         batchProcess(listoffiles, outputfiles, outputpath);
         } catch (NullPointerException e) {
-            System.out.println("Неверный путь к папке.");
+            System.out.println("Невірний шлях до теки.");
         }
     }
 
@@ -151,7 +151,7 @@ class Convertor {
                     convertToPdf(templatewb, wbname[i], dateOfDocument, reestr_type);
                 } catch (Exception e) {
                     //todo move to new folder and show result dialog with path
-                    System.out.println("Не удалось конвертировать: " + wbname[i]);
+                    System.out.println("Не вдалось сконвертувати: " + wbname[i]);
                 }
             }
         }
@@ -278,7 +278,7 @@ class Convertor {
             wbname = mkdirs(seller[reestr_type], wbname, dateOfDocument);
             convertToPdf(templatewb, wbname, dateOfDocument, reestr_type);
         } catch (Exception e) {
-            System.out.println("Неизвестный формат");
+            System.out.println("Невідомий формат");
         }
     }
 
@@ -495,7 +495,7 @@ class Convertor {
 
         File scan = new File("resources/sign.jpg");
         if (!scan.exists()) {
-            System.out.println("Не выбран скан штампа.");
+            System.out.println("Не вибрано скан штампа.");
         } else {
             Image image = Image.getInstance("resources/sign.jpg");
             PdfPCell image_cell = new PdfPCell(image);
@@ -518,40 +518,40 @@ class Convertor {
         String month = dateOfDocument.substring(dateOfDocument.indexOf("."), dateOfDocument.lastIndexOf("."));
         switch (month) {
             case (".01"):
-                month = "Январь";
+                month = "Січень";
                 break;
             case (".02"):
-                month = "Февраль";
+                month = "Лютий";
                 break;
             case (".03"):
-                month = "Март";
+                month = "Березень";
                 break;
             case (".04"):
-                month = "Апрель";
+                month = "Квітень";
                 break;
             case (".05"):
-                month = "Май";
+                month = "Травень";
                 break;
             case (".06"):
-                month = "Июнь";
+                month = "Червень";
                 break;
             case (".07"):
-                month = "Июль";
+                month = "Липень";
                 break;
             case (".08"):
-                month = "Август";
+                month = "Серпень";
                 break;
             case (".09"):
-                month = "Сентябрь";
+                month = "Вересень";
                 break;
             case (".10"):
-                month = "Октябрь";
+                month = "Жовтень";
                 break;
             case (".11"):
-                month = "Ноябрь";
+                month = "Листопад";
                 break;
             case (".12"):
-                month = "Декабрь";
+                month = "Грудень";
                 break;
             default:
         }
