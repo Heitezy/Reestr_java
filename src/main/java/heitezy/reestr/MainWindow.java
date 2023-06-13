@@ -27,7 +27,7 @@ class MainWindow {
 
 
     MainWindow(boolean silence) throws IOException {
-        JFrame frame = new JFrame("Реестр");
+        JFrame frame = new JFrame("Реєстр");
         frame.setSize(650, 220);
         if (silence) {
             frame.setVisible(false);
@@ -91,7 +91,7 @@ class MainWindow {
 
         signButton.addActionListener(actionEvent -> {
             JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Файл изображения", "jpg", "gif", "png", "jpeg");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Файл малюнку", "jpg", "gif", "png", "jpeg");
             fileChooser.setFileFilter(filter);
             if (fileChooser.showOpenDialog(signButton) == JFileChooser.APPROVE_OPTION) {
                 try {
@@ -106,12 +106,12 @@ class MainWindow {
 
                     inStream.close();
                     outStream.close();
-                    System.out.println("Файл скопирован.");
+                    System.out.println("Файл скопійовано.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("Копирование прервано.");
+                System.out.println("Копіювання перервано.");
             }
         });
 
@@ -121,10 +121,10 @@ class MainWindow {
 
             if (!silence) {
                 if (!scanFile.exists()) {
-                    Object[] options = {"Выбрать",
-                            "Отмена"};
+                    Object[] options = {"Обрати",
+                            "Відміна"};
                     int result = JOptionPane.showOptionDialog(panel,
-                            "Нужно указать скан штампа. Хотите выбрать?",
+                            "Потрібно вказати скан штампа. Хочете обрати?",
                             "Скан штампа",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE,
@@ -150,7 +150,7 @@ class MainWindow {
                     });
                 }
                 if (!silence) {
-                    JOptionPane.showMessageDialog(panel, "Конвертация завершена");
+                    JOptionPane.showMessageDialog(panel, "Конвертація завершена");
                     //todo more dialogs for different cases
                 }
             } catch (IOException e) {
